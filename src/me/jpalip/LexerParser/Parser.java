@@ -172,40 +172,29 @@ public class Parser {
         return null;
     }
 
+    // These 4 methods all return their respective Node or null
     private Node inputStatement() {
         List<Node> inputStuff = createList();
-        if(inputStuff != null) {
-            return new InputNode(inputStuff);
-        }
-        return null;
+        return inputStuff == null ? null : new InputNode(inputStuff);
     }
 
     private Node readStatement() {
         List<Node> readStuff = createList();
-        if(readStuff != null) {
-            return new ReadNode(readStuff);
-        }
-        return null;
+        return readStuff == null ? null : new ReadNode(readStuff);
     }
 
     // Returns DataNode or null
-    // Calls dataList() to build the list of data
     private Node dataStatement() {
         List<Node> dataStuff = createList();
-        if(dataStuff != null) {
-            return new DataNode(dataStuff);
-        }
-        return null;
+        return dataStuff == null ? null : new DataNode(dataStuff);
     }
 
     // Returns PrintNode or null
-    // Calls PrintList to build print expressions
     private Node printStatement() {
         List<Node> printStuff = createList();
-        if(printStuff != null)
-            return new PrintNode(printStuff);
-        return null;
+        return printStuff == null ? null : new PrintNode(printStuff);
     }
+
 
     // Creates a list of expressions to use in each xxxxStatement() method
     private List<Node> createList() {
@@ -221,9 +210,7 @@ public class Parser {
             }
         }
 
-        if(exps != null)
-            return exps;
-        return null;
+        return exps;
     }
 
 

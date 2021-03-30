@@ -59,3 +59,4 @@ PRINT "Hi", name$, "you"
 k = (6 * 9)
 PRINT (7-5), (4+5), k = 50
 "test"
+PRINT "this is a test", age, test$
