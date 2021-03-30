@@ -1,6 +1,6 @@
 package me.jpalip.interpret;
 
-import me.jpalip.LexerParser.nodes.Node;
+import me.jpalip.lexerparser.nodes.Node;
 
 import java.util.HashMap;
 import java.util.Map;
