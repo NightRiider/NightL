@@ -4,7 +4,7 @@ package me.jpalip.lexerparser;
  * @JP Aliprantis
  * @date 2/8/2021
  * ICSI 311 - Michael Phipps
- */
+ **/
 
 import java.io.File;
 import java.io.IOException;
@@ -18,16 +18,16 @@ public class Basic {
 
     public static void main(String[] args) throws IOException
     {
-        // Make sure theres only 1 argument
+        // Ensures an argument is present
         if(args.length == 1)
         {
             String filename = args[0]; // store name of file from args
 
             if(new File(filename).exists()) {
-
                 for (String s : Files.readAllLines(Path.of(filename))) {
                     try {
-                        List<Token> tokens = new ArrayList<>();
+                        // Reads each Line, then Lexed, then Parsed
+                        List<Token> tokens = new ArrayList<>(); // Holds Lexed results for Parser
                         Lexer lexer = new Lexer(s);
                         tokens.addAll(lexer.lex());
                         System.out.println(new Lexer(s).lex()); // Prints Lexed Result
@@ -40,7 +40,7 @@ public class Basic {
                 }
             }
         }
-        // Fail if no arguments
+        // Fail with no arguments
         else
         {
             System.err.println("Invalid Number of Arguments.");

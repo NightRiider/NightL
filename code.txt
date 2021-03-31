@@ -1,14 +1,14 @@
 IF (a+b) < c*(d-1) THEN something:
 
-
-
 PRINT NUM$(5, 6)
 LEFT$("test", 5)
+MID$("test", 2)
 VAL("2")
 VAL%("test")
 RANDOM()
 RIGHT$("string", 1)
-
+IF a = c THEN do:
+IF c = g THEN stop:
 IF a < b THEN test:
 IF a = b THEN d:
 IF a <= b THEN c:

@@ -4,7 +4,7 @@ package me.jpalip.lexerparser;
  * @JP Aliprantis
  * @date 3/30/2021
  * ICSI 311 - Michael Phipps
- */
+ **/
 
 import me.jpalip.lexerparser.nodes.*;
 
@@ -67,7 +67,7 @@ public class Parser {
         if(current.getType() == TokenType.IF) {
             advance();
             Node firstExp = expression();
-            if(isOperator(current)) {
+            if(isMatch(OPERATORS)) {
                 Token op = current; // boolean operator
                 advance();
                 Node secondExp = expression();
@@ -195,7 +195,6 @@ public class Parser {
         return printStuff == null ? null : new PrintNode(printStuff);
     }
 
-
     // Creates a list of expressions to use in each xxxxStatement() method
     private List<Node> createList() {
         List<Node> exps = new ArrayList<>();
@@ -260,9 +259,11 @@ public class Parser {
         return new FunctionNode(func, params);
     }
 
-    // Helper variables that define if term/exp
+    // Helper variables for helper method isMatch()
     private static final TokenType[] EXPRESSION = new TokenType[]{ TokenType.TIMES, TokenType.DIVIDE };
     private static final TokenType[] TERM = new TokenType[] { TokenType.PLUS, TokenType.MINUS };
+    private static final TokenType[] OPERATORS = new TokenType[] { TokenType.LESS, TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS_EQUAL, TokenType.EQUALS, TokenType.NOT_EQUAL};
+    private static final TokenType[] FUNCTIONS = new TokenType[] { TokenType.RANDOM, TokenType.LEFT, TokenType.RIGHT, TokenType.MID, TokenType.VALFloat, TokenType.VALInt, TokenType.NUM};
 
     // TERM { (plus or minus) TERM} #1
     private Node expression()
@@ -276,7 +277,7 @@ public class Parser {
         return mathOp(() -> factor(), TERM);
     }
 
-    // {-} number or lparen EXPRESSION rparen OR (number) #3
+    // number OR ( EXPRESSION ) OR (number) OR functionCall() #3
     private Node factor() {
         Token token = current;
 
@@ -318,7 +319,7 @@ public class Parser {
             }
         }
         // Creates pre defined function call
-        else if(isFunction(current)) {
+        else if(isMatch(FUNCTIONS)) {
             FunctionNode function = (FunctionNode) functionInvocation(); // we know current is now a function so call its Invocation method & return it
             return function;
         }
@@ -345,19 +346,5 @@ public class Parser {
             return false;
         }
         return num.contains(".");
-    }
-
-    private boolean isOperator(Token token) {
-        if(token.getType() == TokenType.GREATER || token.getType() == TokenType.LESS || token.getType() == TokenType.LESS_EQUAL || token.getType() == TokenType.GREATER_EQUAL || token.getType() == TokenType.EQUALS || token.getType() == TokenType.NOT_EQUAL) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isFunction(Token token) {
-        if (token.getType() == TokenType.RANDOM || token.getType() == TokenType.LEFT || token.getType() == TokenType.RIGHT || token.getType() == TokenType.MID || token.getType() == TokenType.NUM || token.getType() == TokenType.VALInt || token.getType() == TokenType.VALFloat) {
-            return true;
-        }
-        return false;
     }
 }
