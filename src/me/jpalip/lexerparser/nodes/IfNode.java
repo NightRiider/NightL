@@ -1,13 +1,19 @@
 package me.jpalip.lexerparser.nodes;
 
+import me.jpalip.interpret.Interpreter;
 import me.jpalip.lexerparser.Token;
 
-public class IfNode extends Node{
+public class IfNode extends StatementsNode{
 
     private Token label;
     public IfNode(Node booleanOp, Token label) {
-        super(booleanOp);
+        super(null, booleanOp);
         this.label = label;
+    }
+
+    @Override
+    public Node visit(Interpreter interpret) {
+        return null;
     }
 
     @Override

@@ -1,9 +1,16 @@
 package me.jpalip.lexerparser.nodes;
 
-public class GosubNode extends Node{
+import me.jpalip.interpret.Interpreter;
+
+public class GosubNode extends StatementsNode{
 
     public GosubNode(VariableNode node) {
-        super(node);
+        super(null, node);
+    }
+
+    @Override
+    public Node visit(Interpreter interpret) {
+        return null;
     }
 
     @Override

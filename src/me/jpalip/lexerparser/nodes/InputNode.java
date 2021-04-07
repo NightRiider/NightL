@@ -1,12 +1,19 @@
 package me.jpalip.lexerparser.nodes;
 
+import me.jpalip.interpret.Interpreter;
+
 import java.util.List;
 
-public class InputNode extends Node{
+public class InputNode extends StatementsNode{
 
 
-    public InputNode(List<?> list) {
+    public InputNode(List<Node> list) {
         super(list);
+    }
+
+    @Override
+    public Node visit(Interpreter interpret) {
+        return null;
     }
 
     @Override

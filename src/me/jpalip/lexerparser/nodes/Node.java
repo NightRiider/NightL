@@ -1,7 +1,9 @@
 package me.jpalip.lexerparser.nodes;
 
+import me.jpalip.interpret.Interpreter;
 import me.jpalip.lexerparser.Token;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,23 +18,21 @@ public abstract class Node {
 
     protected Token token;
     protected Node node;
-    protected List<?> list;
+    protected List<Node> list = new ArrayList<Node>();
 
-    public Node(Token token)
-    {
+    public Node(List<Node> list) { this.list = list; }
+
+    public Node(Token token, Node node) {
         this.token = token;
-    }
-
-    public Node(Node node) {
         this.node = node;
     }
 
-    public Node(List<?> list) { this.list = list; }
-
-    public Token getToken() {
-        return token;
+    public String getToken() {
+        return token.toString();
     }
 
+    public abstract Node visit(Interpreter interpret);
 
     public abstract String toString();
+
 }

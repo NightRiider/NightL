@@ -1,5 +1,6 @@
 package me.jpalip.lexerparser.nodes;
 
+import me.jpalip.interpret.Interpreter;
 import me.jpalip.lexerparser.Token;
 import me.jpalip.lexerparser.TokenType;
 
@@ -18,7 +19,7 @@ public class UnaryOpNode extends Node {
 
     public UnaryOpNode(Token token, Node node)
     {
-        super(token);
+        super(token, null);
         this.token = token;
         this.node = node;
     }
@@ -26,6 +27,11 @@ public class UnaryOpNode extends Node {
     public TokenType representation()
     {
         return token.getType();
+    }
+
+    @Override
+    public Node visit(Interpreter interpret) {
+        return null;
     }
 
     @Override

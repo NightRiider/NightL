@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Parser {
-
     // Needed in order to call function as parameter
     private interface Function {
         Node get(); // Override and call factor() to get proper Node to return in parameter
@@ -53,7 +52,7 @@ public class Parser {
             // * Potential issue *
             // If node is not null, statements will always be at least 1, only returning 1 statement
             if (statements.size() != 0) {
-                return new StatementsNode(current, statements);
+                return new StatementsNode(statements);
             }
             else {
                 return expression();
@@ -79,6 +78,12 @@ public class Parser {
                 }
                 return null;
             }
+        }
+
+        // Creates pre defined function call
+        if(isMatch(FUNCTIONS)) {
+            FunctionNode function = (FunctionNode) functionInvocation(); // we know current is now a function so call its Invocation method & return it
+            return function;
         }
 
         // Creates a FOR loop node
@@ -117,7 +122,7 @@ public class Parser {
             Token label = current;
             advance();
             if(current.getType() != null) {
-                Node exp = statements();
+                Node exp = statement();
                 advance();
                 return new LabeledStatementNode(label, exp);
             }
@@ -245,7 +250,7 @@ public class Parser {
                 return new FunctionNode(func, params);
             }
             else {
-                Node param = expression();
+                Node param = statement();
                 if (param != null) {
                     params.add(param);
                     while (current.getType() != TokenType.EOL && current.getType() != TokenType.RPAREN) {
@@ -317,11 +322,6 @@ public class Parser {
             {
                 throw new InvalidSyntaxError("Expected ')'");
             }
-        }
-        // Creates pre defined function call
-        else if(isMatch(FUNCTIONS)) {
-            FunctionNode function = (FunctionNode) functionInvocation(); // we know current is now a function so call its Invocation method & return it
-            return function;
         }
         if(current.getType() != TokenType.EOL) {
             throw new InvalidSyntaxError("Expected statement");

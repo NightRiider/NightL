@@ -1,5 +1,6 @@
 package me.jpalip.lexerparser.nodes;
 
+import me.jpalip.interpret.Interpreter;
 import me.jpalip.lexerparser.Token;
 
 public class BooleanOperationNode extends Node{
@@ -7,9 +8,14 @@ public class BooleanOperationNode extends Node{
     private Token operator;
     private Node secondNode;
     public BooleanOperationNode(Node firstNode, Token operator, Node secondNode) {
-        super(firstNode);
+        super(null, firstNode);
         this.operator = operator;
         this.secondNode = secondNode;
+    }
+
+    @Override
+    public Node visit(Interpreter interpret) {
+        return null;
     }
 
     @Override

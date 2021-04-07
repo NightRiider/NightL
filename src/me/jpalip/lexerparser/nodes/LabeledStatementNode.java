@@ -1,14 +1,19 @@
 package me.jpalip.lexerparser.nodes;
 
+import me.jpalip.interpret.Interpreter;
 import me.jpalip.lexerparser.Token;
 
-public class LabeledStatementNode extends Node
+public class LabeledStatementNode extends StatementsNode
 {
-    private Node node;
-
     public LabeledStatementNode(Token token, Node node) {
-        super(token);
-        this.node = node;
+        super(token, node);
+    }
+
+    public Node getChild() { return node; }
+
+    @Override
+    public Node visit(Interpreter interpret) {
+        return interpret.visitLabels(this);
     }
 
     @Override

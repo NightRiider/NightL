@@ -6,6 +6,10 @@ package me.jpalip.lexerparser;
  * ICSI 311 - Michael Phipps
  **/
 
+import me.jpalip.interpret.Interpreter;
+import me.jpalip.lexerparser.nodes.Node;
+import me.jpalip.lexerparser.nodes.StatementsNode;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,22 +26,34 @@ public class Basic {
         if(args.length == 1)
         {
             String filename = args[0]; // store name of file from args
-
+            List<Node> parsed = new ArrayList<>(); // List of Parsed Nodes
             if(new File(filename).exists()) {
                 for (String s : Files.readAllLines(Path.of(filename))) {
                     try {
+                        List<Token> tokens = new ArrayList<>(); // List of Lexed Tokens
                         // Reads each Line, then Lexed, then Parsed
-                        List<Token> tokens = new ArrayList<>(); // Holds Lexed results for Parser
                         Lexer lexer = new Lexer(s);
                         tokens.addAll(lexer.lex());
                         System.out.println(new Lexer(s).lex()); // Prints Lexed Result
                         Parser parser = new Parser(tokens);
-                        System.out.println(parser.parse()); // Prints Parsed Result
+                        parsed.add(parser.parse());
+                        //System.out.println(parsed);
                     }
                     catch (InvalidCharError e) {
                         System.out.println(e.getLocalizedMessage() + " - " + s);
                     }
                 }
+                List<Node> statements = new ArrayList<>();
+                StatementsNode curr = null;
+                for(int i = 0; i < parsed.size(); i++) {
+                    curr = (StatementsNode)parsed.get(i);
+                    statements.add(curr.representation().get(0));
+                }
+                StatementsNode parse = new StatementsNode(statements);
+                System.out.println(parse);
+
+                Interpreter interpret = new Interpreter(parse);
+                System.out.println(interpret.interpret());
             }
         }
         // Fail with no arguments

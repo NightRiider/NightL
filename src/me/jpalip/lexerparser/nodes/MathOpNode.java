@@ -1,5 +1,6 @@
 package me.jpalip.lexerparser.nodes;
 
+import me.jpalip.interpret.Interpreter;
 import me.jpalip.lexerparser.Token;
 import me.jpalip.lexerparser.TokenType;
 
@@ -19,7 +20,7 @@ public class MathOpNode extends Node {
 
     public MathOpNode(Token operator, Node leftOp, Node rightOp)
     {
-        super(operator);
+        super(operator, null);
         this.leftOp = leftOp;
         this.rightOp = rightOp;
     }
@@ -27,6 +28,12 @@ public class MathOpNode extends Node {
     public Node getLeft() { return leftOp; }
 
     public Node getRight() { return rightOp; }
+
+    @Override
+    public Node visit(Interpreter interpret) {
+
+        return null;
+    }
 
     @Override
     public String toString()
