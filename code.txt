@@ -1,7 +1,8 @@
 PRINT 5, "g"
-a = 5
-rs = 5
-PRINT (rs * 5)
+a = 5 * 3
+rs = 5.5
+PRINT (rs * 5.0)
+PRINT 4.4 * 3.0
 PRINT (a * 3)
 PRINT (5*3), "test"
 PRINT "test"

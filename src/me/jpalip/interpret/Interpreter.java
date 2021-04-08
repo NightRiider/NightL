@@ -19,8 +19,8 @@ public class Interpreter {
 
 
     // Hashmaps to store each variable
-    private Map<String, Integer> intVars = new HashMap<>();
-    private Map<String, Float> floatVars = new HashMap<>();
+    private Map<String, IntPrimitive> intVars = new HashMap<>();
+    private Map<String, Primitive> floatVars = new HashMap<>();
     private Map<String, String> strVars = new HashMap<>();
     private Map<String, Node> labels = new HashMap<>();
 
@@ -40,9 +40,24 @@ public class Interpreter {
         return null;
     }
 
+
     public Node visitAssignment(AssignmentNode node) {
-        if(node.expToIntNode() instanceof MathOpNode || node.expToIntNode() instanceof IntegerNode)
-            intVars.put(node.getToken().getValue(), evaluateIntMathOp(node.expToIntNode()));
+        Primitive<?> value = evaluateMathOp(node.expToIntNode());
+
+        switch (value.getType()) {
+            case FLOAT: {
+                FloatPrimitive floatVal = value.getValue(Type.FLOAT);
+                floatVars.put(node.getToken().getValue(), floatVal);
+                break;
+            }
+            case INT: {
+                IntPrimitive intVal = value.getValue(Type.INT);
+                intVars.put(node.getToken().getValue(), intVal);
+                break;
+            }
+            default: return null;
+        }
+
         return null;
     }
 
@@ -100,13 +115,13 @@ public class Interpreter {
             TokenType op = node.getToken().getType();
             switch (op) {
                 case PLUS:
-                    return right + left;
+                    return left.add(right);
                 case MINUS:
                     return left.min(right);
                 case TIMES:
-                    return right * left;
+                    return left.mul(right);
                 case DIVIDE:
-                    return left / right;
+                    return left.div(right);
             }
         } else if (node instanceof IntegerNode) {
             return new IntPrimitive(((IntegerNode) node).representation());
@@ -117,8 +132,11 @@ public class Interpreter {
             if (intVars.containsKey(key)) {
                 return intVars.get(key);
             }
+            else if (floatVars.containsKey(key)) {
+                return floatVars.get(key);
+            }
         }
-        return 0;
+        return new IntPrimitive(0);
     }
 
     public void visitNodes() {
