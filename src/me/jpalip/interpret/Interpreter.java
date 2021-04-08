@@ -1,5 +1,9 @@
 package me.jpalip.interpret;
 
+import me.jpalip.interpret.primitive.FloatPrimitive;
+import me.jpalip.interpret.primitive.IntPrimitive;
+import me.jpalip.interpret.primitive.Primitive;
+import me.jpalip.interpret.primitive.Type;
 import me.jpalip.lexerparser.TokenType;
 import me.jpalip.lexerparser.nodes.*;
 
@@ -43,26 +47,26 @@ public class Interpreter {
     }
 
     public Node visitPrint(PrintNode node) {
-        for(Node n : node.representation()) {
-            if(n instanceof VariableNode) {
-                if(intVars.get(n) != null) {
+        for (Node n : node.representation()) {
+            if (n instanceof VariableNode) {
+                if (intVars.get(n) != null) {
                     System.out.print(intVars.get(n) + " ");
                 }
-                if(floatVars.get(n) != null) {
+                if (floatVars.get(n) != null) {
                     System.out.print(floatVars.get(n) + " ");
                 }
-                if(strVars.get(n) != null) {
+                if (strVars.get(n) != null) {
                     System.out.print(strVars.get(n) + " ");
                 }
             }
-            if(n instanceof IntegerNode)
-                System.out.print(((IntegerNode)n).representation() + " ");
-            if(n instanceof FloatNode)
-                System.out.print(((FloatNode)n).representation() + " ");
-            if(n instanceof StringNode)
+            if (n instanceof IntegerNode)
+                System.out.print(((IntegerNode) n).representation() + " ");
+            if (n instanceof FloatNode)
+                System.out.print(((FloatNode) n).representation() + " ");
+            if (n instanceof StringNode)
                 System.out.print(((StringNode) n).representation() + " ");
-            if(n instanceof MathOpNode) {
-                System.out.print(evaluateIntMathOp(n) + " ");
+            if (n instanceof MathOpNode) {
+                System.out.print(evaluateMathOp(n) + " ");
             }
         }
         System.out.println();
@@ -89,53 +93,30 @@ public class Interpreter {
     }
 
     // Int values
-    public int evaluateIntMathOp(Node node) {
-        if(node instanceof MathOpNode) {
-            int left = evaluateIntMathOp(((MathOpNode) node).getLeft());
-            int right = evaluateIntMathOp(((MathOpNode) node).getRight());
+    public Primitive<?> evaluateMathOp(Node node) {
+        if (node instanceof MathOpNode) {
+            Primitive<?> left = evaluateMathOp(((MathOpNode) node).getLeft());
+            Primitive<?> right = evaluateMathOp(((MathOpNode) node).getRight());
             TokenType op = node.getToken().getType();
-            switch(op) {
+            switch (op) {
                 case PLUS:
                     return right + left;
                 case MINUS:
-                    return left - right;
+                    return left.min(right);
                 case TIMES:
                     return right * left;
                 case DIVIDE:
                     return left / right;
             }
-        }
-        else if(node instanceof IntegerNode) {
-            return ((IntegerNode) node).representation();
-        }
-        else if(node instanceof VariableNode) {
-            if(intVars.get(node.getToken().getValue()) != null) {
-                return intVars.get(node.getToken().getValue());
+        } else if (node instanceof IntegerNode) {
+            return new IntPrimitive(((IntegerNode) node).representation());
+        } else if (node instanceof FloatNode) {
+            return new FloatPrimitive(((FloatNode) node).representation());
+        } else if (node instanceof VariableNode) {
+            String key = node.getToken().getValue();
+            if (intVars.containsKey(key)) {
+                return intVars.get(key);
             }
-        }
-        return 0;
-    }
-    // Decimal values
-    public float evaluateFloatMathOp(Node node) {
-        float left;
-        float right;
-        if(node instanceof MathOpNode) {
-            left = evaluateFloatMathOp(((MathOpNode) node).getLeft());
-            right = evaluateFloatMathOp(((MathOpNode) node).getRight());
-            String operator = ((MathOpNode) node).representation();
-            switch(operator) {
-                case "PLUS":
-                    return right + left;
-                case "MINUS":
-                    return left - right;
-                case "TIMES":
-                    return right * left;
-                case "DIVIDE":
-                    return left / right;
-            }
-        }
-        if(node instanceof FloatNode) {
-            return ((FloatNode) node).representation();
         }
         return 0;
     }
