@@ -30,10 +30,7 @@ public class MathOpNode extends Node {
     public Node getRight() { return rightOp; }
 
     @Override
-    public Node visit(Interpreter interpret) {
-
-        return null;
-    }
+    public Node visit(Interpreter interpret) { return null; }
 
     @Override
     public String toString()
@@ -41,8 +38,8 @@ public class MathOpNode extends Node {
         return "MathOpNode(" + leftOp + ", " + token.getType() + ", " + rightOp + ")";
     }
 
-    public TokenType representation()
+    public String representation()
     {
-        return token.getType();
+        return token.toString();
     }
 }

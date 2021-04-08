@@ -265,8 +265,8 @@ public class Parser {
     }
 
     // Helper variables for helper method isMatch()
-    private static final TokenType[] EXPRESSION = new TokenType[]{ TokenType.TIMES, TokenType.DIVIDE };
-    private static final TokenType[] TERM = new TokenType[] { TokenType.PLUS, TokenType.MINUS };
+    private static final TokenType[] EXPRESSION = new TokenType[]{ TokenType.PLUS, TokenType.MINUS };
+    private static final TokenType[] TERM = new TokenType[] { TokenType.TIMES, TokenType.DIVIDE };
     private static final TokenType[] OPERATORS = new TokenType[] { TokenType.LESS, TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS_EQUAL, TokenType.EQUALS, TokenType.NOT_EQUAL};
     private static final TokenType[] FUNCTIONS = new TokenType[] { TokenType.RANDOM, TokenType.LEFT, TokenType.RIGHT, TokenType.MID, TokenType.VALFloat, TokenType.VALInt, TokenType.NUM};
 

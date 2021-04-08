@@ -23,6 +23,10 @@ public class FloatNode extends Node
         return null;
     }
 
+    public Float representation() {
+        return Float.parseFloat(token.getValue());
+    }
+
     @Override
     public String toString() {
         return "FloatNode(" + token.getValue() + ")";

@@ -27,8 +27,8 @@ public abstract class Node {
         this.node = node;
     }
 
-    public String getToken() {
-        return token.toString();
+    public Token getToken() {
+        return token;
     }
 
     public abstract Node visit(Interpreter interpret);

@@ -11,11 +11,11 @@ public class PrintNode extends StatementsNode {
         super(list);
     }
 
-    public String getValue() { return token.getValue(); }
+    public List<Node> getValues() { return list; }
 
     @Override
     public Node visit(Interpreter interpret) {
-        return null;
+        return interpret.visitPrint(this);
     }
 
     @Override
