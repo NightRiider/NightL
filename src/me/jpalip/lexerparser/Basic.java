@@ -34,7 +34,7 @@ public class Basic {
                         // Reads each Line, then Lexed, then Parsed
                         Lexer lexer = new Lexer(s);
                         tokens.addAll(lexer.lex());
-                        System.out.println(new Lexer(s).lex()); // Prints Lexed Result
+                        //System.out.println(new Lexer(s).lex()); // Prints Lexed Result
                         Parser parser = new Parser(tokens);
                         parsed.add(parser.parse());
                     }

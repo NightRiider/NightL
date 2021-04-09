@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 public class Interpreter {
     private List<Node> parse; // Full list of parsed Nodes
@@ -16,7 +17,7 @@ public class Interpreter {
 
     // Hashmaps to store each variable
     private Map<String, IntPrimitive> intVars = new HashMap<>();
-    private Map<String, Primitive> floatVars = new HashMap<>();
+    private Map<String, FloatPrimitive> floatVars = new HashMap<>();
     private Map<String, String> strVars = new HashMap<>();
     private Map<String, Node> labels = new HashMap<>();
 
@@ -57,30 +58,56 @@ public class Interpreter {
         return null;
     }
 
+    public Primitive<?> visitInput(InputNode node) {
+        Scanner scan = new Scanner(System.in);
+        System.out.println(((StringNode)(node.representation().get(0))).representation());
+        for(Node n : node.representation()) {
+            if(n != node.representation().get(0)) {
+                if(n.getToken().getValue().contains("$")) {
+                    String string = scan.nextLine();
+                    strVars.put(n.getToken().getValue(), string);
+                }
+                else if(n.getToken().getValue().contains("%")) {
+                    Float numb = scan.nextFloat();
+                    floatVars.put(n.getToken().getValue(), new FloatPrimitive(numb));
+                }
+                else {
+                    int num = scan.nextInt();
+                    intVars.put(n.getToken().getValue(), new IntPrimitive(num));
+                }
+            }
+        }
+
+        return null;
+    }
+
     public Primitive<?> visitPrint(PrintNode node) {
         for (Node n : node.representation()) {
             if (n instanceof VariableNode) {
-                if (intVars.get(n) != null) {
-                    System.out.print(intVars.get(n) + " ");
+                if (intVars.get(n.getToken().getValue()) != null) {
+                    System.out.print(intVars.get(n.getToken().getValue()) + " ");
                 }
-                if (floatVars.get(n) != null) {
-                    System.out.print(floatVars.get(n) + " ");
+                if (floatVars.get(n.getToken().getValue()) != null) {
+                    System.out.print(floatVars.get(n.getToken().getValue()) + " ");
                 }
-                if (strVars.get(n) != null) {
-                    System.out.print(strVars.get(n) + " ");
+                if (strVars.get(n.getToken().getValue()) != null) {
+                    System.out.print(strVars.get(n.getToken().getValue()) + " ");
                 }
             }
-            if (n instanceof IntegerNode)
+            else if (n instanceof IntegerNode)
                 System.out.print(((IntegerNode) n).representation() + " ");
-            if (n instanceof FloatNode)
+            else if (n instanceof FloatNode)
                 System.out.print(((FloatNode) n).representation() + " ");
-            if (n instanceof StringNode)
+            else if (n instanceof StringNode)
                 System.out.print(((StringNode) n).representation() + " ");
-            if (n instanceof MathOpNode) {
+            else if (n instanceof MathOpNode) {
                 System.out.print(evaluateMathOp(n) + " ");
             }
-            if (n instanceof FunctionNode) {
+            else if (n instanceof FunctionNode) {
                 System.out.print(n.visit(this));
+            }
+            else if(n instanceof InputNode) {
+                System.out.println(n.visit(this));
             }
         }
         System.out.println();
@@ -186,6 +213,7 @@ public class Interpreter {
         visitNodes();
         //System.out.println(labels);
         //System.out.println(intVars);
+        //System.out.println(strVars);
         //System.out.println(floatVars);
         return null;
     }

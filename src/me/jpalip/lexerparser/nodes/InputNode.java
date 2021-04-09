@@ -14,7 +14,7 @@ public class InputNode extends StatementsNode{
 
     @Override
     public Primitive<?> visit(Interpreter interpret) {
-        return null;
+        return interpret.visitInput(this);
     }
 
     @Override

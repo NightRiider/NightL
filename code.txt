@@ -1,3 +1,5 @@
+INPUT "What is your name and age?", name$, age
+PRINT "Your name is: ", name$, " Your age is: ", age
 PRINT LEFT$("test", 2)
 PRINT RIGHT$("test", 2)
 PRINT MID$("Albany",2,3)
