@@ -106,7 +106,6 @@ public class Interpreter {
         return null;
     }
 
-    // Int values
     public Primitive<?> evaluateMathOp(Node node) {
         if (node instanceof MathOpNode) {
             Primitive<?> left = evaluateMathOp(((MathOpNode) node).getLeft());
@@ -134,6 +133,9 @@ public class Interpreter {
             else if (floatVars.containsKey(key)) {
                 return floatVars.get(key);
             }
+        }
+        else if(node instanceof FunctionNode) {
+            return visitFunction((FunctionNode) node);
         }
         return new IntPrimitive(0);
     }
@@ -163,7 +165,6 @@ public class Interpreter {
             return new StringPrimitive(String.valueOf(node.getParams().get(0)));
         }
         if(node.getType() == TokenType.VALInt) {
-            //System.out.println(Integer.parseInt(((StringNode)(node.getParams().get(0))).representation()));
             return new IntPrimitive(Integer.parseInt(((StringNode)(node.getParams().get(0))).representation()));
         }
         if(node.getType() == TokenType.VALFloat) {

@@ -43,7 +43,7 @@ public class Basic {
                     }
                 }
                 List<Node> statements = new ArrayList<>();
-                StatementsNode curr = null;
+                StatementsNode curr;
                 for(int i = 0; i < parsed.size(); i++) {
                     curr = (StatementsNode)parsed.get(i);
                     statements.add(curr.representation().get(0));
