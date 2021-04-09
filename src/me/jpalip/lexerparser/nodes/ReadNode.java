@@ -1,6 +1,7 @@
 package me.jpalip.lexerparser.nodes;
 
 import me.jpalip.interpret.Interpreter;
+import me.jpalip.interpret.primitive.Primitive;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class ReadNode extends StatementsNode {
     }
 
     @Override
-    public Node visit(Interpreter interpret) {
+    public Primitive<?> visit(Interpreter interpret) {
         return null;
     }
 

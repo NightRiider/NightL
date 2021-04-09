@@ -83,6 +83,7 @@ public class Parser {
         // Creates pre defined function call
         if(isMatch(FUNCTIONS)) {
             FunctionNode function = (FunctionNode) functionInvocation(); // we know current is now a function so call its Invocation method & return it
+            System.out.println("FUNCTION : " + function);
             return function;
         }
 
@@ -250,7 +251,7 @@ public class Parser {
                 return new FunctionNode(func, params);
             }
             else {
-                Node param = statement();
+                Node param = factor();
                 if (param != null) {
                     params.add(param);
                     while (current.getType() != TokenType.EOL && current.getType() != TokenType.RPAREN) {
@@ -322,6 +323,10 @@ public class Parser {
             {
                 throw new InvalidSyntaxError("Expected ')'");
             }
+        }
+        if(isMatch(FUNCTIONS)) {
+            FunctionNode function = (FunctionNode) functionInvocation(); // we know current is now a function so call its Invocation method & return it
+            return function;
         }
         if(current.getType() != TokenType.EOL) {
             throw new InvalidSyntaxError("Expected statement");

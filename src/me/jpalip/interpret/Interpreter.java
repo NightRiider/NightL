@@ -1,9 +1,6 @@
 package me.jpalip.interpret;
 
-import me.jpalip.interpret.primitive.FloatPrimitive;
-import me.jpalip.interpret.primitive.IntPrimitive;
-import me.jpalip.interpret.primitive.Primitive;
-import me.jpalip.interpret.primitive.Type;
+import me.jpalip.interpret.primitive.*;
 import me.jpalip.lexerparser.TokenType;
 import me.jpalip.lexerparser.nodes.*;
 
@@ -14,7 +11,6 @@ import java.util.Map;
 
 public class Interpreter {
     private List<Node> parse; // Full list of parsed Nodes
-    private List<Node> parsed = parse;
     private List<Node> data = new ArrayList<>(); // Holds DATA from program
 
 
@@ -28,20 +24,20 @@ public class Interpreter {
         this.parse = parsed.representation();
     }
 
-    public Node visitLabels(LabeledStatementNode node) {
+    public Primitive<?> visitLabels(LabeledStatementNode node) {
         labels.put(node.getToken().toString(), node.getChild());
         parse.set(parse.indexOf(node), node.getChild());
         return null;
     }
 
-    public Node visitData(DataNode node) {
+    public Primitive<?> visitData(DataNode node) {
         data.add(node);
         parse.remove(node);
         return null;
     }
 
 
-    public Node visitAssignment(AssignmentNode node) {
+    public Primitive<?> visitAssignment(AssignmentNode node) {
         Primitive<?> value = evaluateMathOp(node.expToIntNode());
 
         switch (value.getType()) {
@@ -61,7 +57,7 @@ public class Interpreter {
         return null;
     }
 
-    public Node visitPrint(PrintNode node) {
+    public Primitive<?> visitPrint(PrintNode node) {
         for (Node n : node.representation()) {
             if (n instanceof VariableNode) {
                 if (intVars.get(n) != null) {
@@ -83,6 +79,9 @@ public class Interpreter {
             if (n instanceof MathOpNode) {
                 System.out.print(evaluateMathOp(n) + " ");
             }
+            if (n instanceof FunctionNode) {
+                System.out.print(n.visit(this));
+            }
         }
         System.out.println();
 
@@ -90,7 +89,7 @@ public class Interpreter {
     }
 
 
-    public Node visitFOR(ForNode fornode) {
+    public Primitive<?> visitFOR(ForNode fornode) {
         for (int j = 0; j < parse.size(); j++) {
             Node curr = parse.get(j);
             if (curr instanceof NextNode) {
@@ -139,6 +138,40 @@ public class Interpreter {
         return new IntPrimitive(0);
     }
 
+    public Primitive<?> visitFunction(FunctionNode node) {
+        if(node.getType() == TokenType.RANDOM) {
+            int rand = (int)Math.floor(Math.random()*(100) + 1);
+            return new IntPrimitive(rand);
+        }
+        if(node.getType() == TokenType.LEFT) {
+            String string = ((StringNode)(node.getParams().get(0))).representation();
+            int index = ((IntegerNode)(node.getParams().get(1))).representation();
+            return new StringPrimitive(string.substring(0, index));
+        }
+        if(node.getType() == TokenType.RIGHT) {
+            String string = ((StringNode)(node.getParams().get(0))).representation();
+            int index = ((IntegerNode)(node.getParams().get(1))).representation();
+            return new StringPrimitive(string.substring(string.length() - index));
+        }
+        if(node.getType() == TokenType.MID) {
+            String string = ((StringNode)(node.getParams().get(0))).representation();
+            int start = ((IntegerNode)(node.getParams().get(1))).representation();
+            int count = ((IntegerNode)(node.getParams().get(2))).representation();
+            return new StringPrimitive(string.substring(start, start+count));
+        }
+        if(node.getType() == TokenType.NUM) {
+            return new StringPrimitive(String.valueOf(node.getParams().get(0)));
+        }
+        if(node.getType() == TokenType.VALInt) {
+            //System.out.println(Integer.parseInt(((StringNode)(node.getParams().get(0))).representation()));
+            return new IntPrimitive(Integer.parseInt(((StringNode)(node.getParams().get(0))).representation()));
+        }
+        if(node.getType() == TokenType.VALFloat) {
+            return new FloatPrimitive(Float.parseFloat(((StringNode)(node.getParams().get(0))).representation()));
+        }
+        return null;
+    }
+
     public void visitNodes() {
         for (int i = 0; i < parse.size(); i++) {
             parse.get(i).visit(this);
@@ -150,8 +183,9 @@ public class Interpreter {
 
     public String interpret() {
         visitNodes();
-        System.out.println(labels);
-        System.out.println(intVars);
+        //System.out.println(labels);
+        //System.out.println(intVars);
+        //System.out.println(floatVars);
         return null;
     }
 }

@@ -1,6 +1,7 @@
 package me.jpalip.lexerparser.nodes;
 
 import me.jpalip.interpret.Interpreter;
+import me.jpalip.interpret.primitive.Primitive;
 import me.jpalip.lexerparser.Token;
 
 public class BooleanOperationNode extends Node{
@@ -14,7 +15,7 @@ public class BooleanOperationNode extends Node{
     }
 
     @Override
-    public Node visit(Interpreter interpret) {
+    public Primitive<?> visit(Interpreter interpret) {
         return null;
     }
 

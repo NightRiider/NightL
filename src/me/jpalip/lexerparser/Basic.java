@@ -37,7 +37,6 @@ public class Basic {
                         System.out.println(new Lexer(s).lex()); // Prints Lexed Result
                         Parser parser = new Parser(tokens);
                         parsed.add(parser.parse());
-                        //System.out.println(parsed);
                     }
                     catch (InvalidCharError e) {
                         System.out.println(e.getLocalizedMessage() + " - " + s);

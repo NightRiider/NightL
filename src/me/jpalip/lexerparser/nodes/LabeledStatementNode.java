@@ -1,6 +1,7 @@
 package me.jpalip.lexerparser.nodes;
 
 import me.jpalip.interpret.Interpreter;
+import me.jpalip.interpret.primitive.Primitive;
 import me.jpalip.lexerparser.Token;
 
 public class LabeledStatementNode extends StatementsNode
@@ -12,7 +13,7 @@ public class LabeledStatementNode extends StatementsNode
     public Node getChild() { return node; }
 
     @Override
-    public Node visit(Interpreter interpret) {
+    public Primitive<?> visit(Interpreter interpret) {
         return interpret.visitLabels(this);
     }
 

@@ -1,7 +1,9 @@
 package me.jpalip.lexerparser.nodes;
 
 import me.jpalip.interpret.Interpreter;
+import me.jpalip.interpret.primitive.Primitive;
 import me.jpalip.lexerparser.Token;
+import me.jpalip.lexerparser.TokenType;
 
 import java.util.List;
 
@@ -14,9 +16,13 @@ public class FunctionNode extends StatementsNode
         funcName = token;
     }
 
+    public TokenType getType() { return funcName.getType(); }
+
+    public List<Node> getParams() { return list; }
+
     @Override
-    public Node visit(Interpreter interpret) {
-        return null;
+    public Primitive<?> visit(Interpreter interpret) {
+        return interpret.visitFunction(this);
     }
 
     @Override

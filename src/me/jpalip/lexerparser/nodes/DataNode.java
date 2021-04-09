@@ -1,6 +1,7 @@
 package me.jpalip.lexerparser.nodes;
 
 import me.jpalip.interpret.Interpreter;
+import me.jpalip.interpret.primitive.Primitive;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public class DataNode extends Node
     public List<Node> representation() { return list; }
 
     @Override
-    public Node visit(Interpreter interpret) {
+    public Primitive<?> visit(Interpreter interpret) {
         return interpret.visitData(this);
     }
 

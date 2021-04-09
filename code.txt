@@ -1,8 +1,16 @@
+PRINT LEFT$("test", 2)
+PRINT RIGHT$("test", 2)
+PRINT MID$("Albany",2,3)
+PRINT NUM(5)
+PRINT NUM(5.553)
+PRINT VAL("6")
+PRINT VAL%("6.8999")
+PRINT RANDOM()
+PRINT a
 PRINT 5, "g"
-a = 5 * 3
+a = 10
 rs = 5.5
 PRINT (rs * 5.0)
 PRINT 4.4 * 3.0
 PRINT (a * 3)
 PRINT (5*3), "test"
-PRINT "test"

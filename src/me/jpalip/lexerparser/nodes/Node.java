@@ -1,6 +1,7 @@
 package me.jpalip.lexerparser.nodes;
 
 import me.jpalip.interpret.Interpreter;
+import me.jpalip.interpret.primitive.Primitive;
 import me.jpalip.lexerparser.Token;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public abstract class Node {
         return token;
     }
 
-    public abstract Node visit(Interpreter interpret);
+    public abstract Primitive<?> visit(Interpreter interpret);
 
     public abstract String toString();
 

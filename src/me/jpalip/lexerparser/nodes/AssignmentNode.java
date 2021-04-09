@@ -1,6 +1,7 @@
 package me.jpalip.lexerparser.nodes;
 
 import me.jpalip.interpret.Interpreter;
+import me.jpalip.interpret.primitive.Primitive;
 import me.jpalip.lexerparser.Token;
 
 public class AssignmentNode extends StatementsNode {
@@ -15,7 +16,7 @@ public class AssignmentNode extends StatementsNode {
     public Node expToIntNode() { return node; }
 
     @Override
-    public Node visit(Interpreter interpret) { return interpret.visitAssignment(this); }
+    public Primitive<?> visit(Interpreter interpret) { return interpret.visitAssignment(this); }
 
     @Override
     public String toString()

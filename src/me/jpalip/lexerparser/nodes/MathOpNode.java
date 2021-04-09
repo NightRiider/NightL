@@ -1,8 +1,8 @@
 package me.jpalip.lexerparser.nodes;
 
 import me.jpalip.interpret.Interpreter;
+import me.jpalip.interpret.primitive.Primitive;
 import me.jpalip.lexerparser.Token;
-import me.jpalip.lexerparser.TokenType;
 
 /**
  * @version 1.0 - Parser #1
@@ -30,7 +30,7 @@ public class MathOpNode extends Node {
     public Node getRight() { return rightOp; }
 
     @Override
-    public Node visit(Interpreter interpret) { return null; }
+    public Primitive<?> visit(Interpreter interpret) { return null; }
 
     @Override
     public String toString()
