@@ -28,6 +28,8 @@ public class StatementsNode extends Node {
 
     public void setNext(Node node) { next = node; }
 
+    public Node getNext() { return next; }
+
     @Override
     public String toString()
     {

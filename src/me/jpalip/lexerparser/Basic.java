@@ -17,7 +17,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-// This class takes a text file from arguments and performs a lexical analysis of the text
+// This class takes a text file from arguments, then Lexes it, then Parses it, then Interprets it
+// Modeled After the Basic Language
 public class Basic {
 
     public static void main(String[] args) throws IOException
@@ -52,7 +53,8 @@ public class Basic {
                 System.out.println(parse);
 
                 Interpreter interpret = new Interpreter(parse);
-                System.out.println(interpret.interpret());
+                interpret.interpret();
+                //System.out.println(interpret.interpret());
             }
         }
         // Fail with no arguments

@@ -83,7 +83,7 @@ public class Parser {
         // Creates pre defined function call
         if(isMatch(FUNCTIONS)) {
             FunctionNode function = (FunctionNode) functionInvocation(); // we know current is now a function so call its Invocation method & return it
-            System.out.println("FUNCTION : " + function);
+            //System.out.println("FUNCTION : " + function);
             return function;
         }
 
