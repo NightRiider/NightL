@@ -8,11 +8,20 @@ public class BooleanOperationNode extends Node{
 
     private Token operator;
     private Node secondNode;
-    public BooleanOperationNode(Node firstNode, Token operator, Node secondNode) {
-        super(null, firstNode);
+    public BooleanOperationNode(Node node, Token operator, Node secondNode) {
+        super(null, node);
         this.operator = operator;
         this.secondNode = secondNode;
     }
+
+    public Token getOperator() {
+        return operator;
+    }
+
+    public Node getNode() { return node; }
+
+    public Node getSecondNode() { return secondNode; }
+
 
     @Override
     public Primitive<?> visit(Interpreter interpret) {

@@ -6,9 +6,6 @@ package me.jpalip.lexerparser;
  * ICSI 311 - Michael Phipps
  */
 
-
-// Add - num support
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,9 +16,11 @@ public class Lexer {
 
     private static final char NUL = Character.MIN_VALUE; // equivalent char null value
     // Hashmap to simply convert specific token types
+    private static final Map<Character, Character> ESCAPED_CHARS = new HashMap<>();
+
     private static final Map<String, TokenType> TOKENS = new HashMap<>();
-    static
-    {
+
+    static {
         TOKENS.put("+", TokenType.PLUS);
         TOKENS.put("-", TokenType.MINUS);
         TOKENS.put("*", TokenType.TIMES);
@@ -53,6 +52,13 @@ public class Lexer {
         TOKENS.put("NUM$", TokenType.NUM);
         TOKENS.put("VAL", TokenType.VALInt);
         TOKENS.put("VAL%", TokenType.VALFloat);
+        ESCAPED_CHARS.put('n', '\n');
+        ESCAPED_CHARS.put('t', '\t');
+        ESCAPED_CHARS.put('b', '\b');
+        ESCAPED_CHARS.put('r', '\r');
+        ESCAPED_CHARS.put('\'', '\'');
+        ESCAPED_CHARS.put('"', '"');
+        ESCAPED_CHARS.put('\\', '\\');
     }
 
     private final String input;
@@ -60,61 +66,44 @@ public class Lexer {
     private Position pos = new Position(0, 1, 0); // Keeps track of positioning while reading file
 
     // Constructor to get input, set positioning and starting char
-    public Lexer (final String input)
-    {
+    public Lexer(final String input) {
         this.input = input.strip();
 
-        if (input != null && !input.isBlank())
-        {
+        if (input != null && !input.isBlank()) {
             this.current = this.input.charAt(pos.getIndex());
         }
     }
 
     // This is the method that is called when you need to perform lexical analysis on a line of text
-    public List<Token> lex()
-    {
+    public List<Token> lex() {
         List<Token> tokens = new ArrayList<>();
 
         // EOL to list if empty or blank
-        if (input == null || input.isBlank())
-        {
+        if (input == null || input.isBlank()) {
             tokens.add(new Token(TokenType.EOL));
             return tokens;
         }
 
         // Loop through chars that aren't NUL
-        while (current != NUL)
-        {
+        while (current != NUL) {
             // Ignores white space when needed
-            if (isWhiteSpace())
-            {
+            if (isWhiteSpace()) {
                 advance();
             }
             // The following statements check for specific elements and call their corresponding methods
             // Which cleans things up and makes it easier to read
-            else if (isNumber())
-            {
+            else if (isNumber()) {
                 tokens.add(consumeNumber());
-            }
-            else if (isOperator())
-            {
+            } else if (isOperator()) {
                 tokens.add(consumeOperator());
-            }
-            else if (isOpeningString())
-            {
+            } else if (isOpeningString()) {
                 tokens.add(consumeString());
-            }
-            else if (isComparisonOperator())
-            {
+            } else if (isComparisonOperator()) {
                 tokens.add(consumeComparisonOperator());
-            }
-            else if (isParen())
-            {
+            } else if (isParen()) {
                 tokens.add(new Token(TOKENS.get(Character.toString(current))));
                 advance();
-            }
-            else
-            {
+            } else {
                 tokens.add(consumeWord());
             }
         }
@@ -125,8 +114,7 @@ public class Lexer {
     }
 
     // Returns current operator
-    private Token consumeOperator()
-    {
+    private Token consumeOperator() {
         char op = current;
         advance();
         return new Token(TOKENS.get(Character.toString(op)));
@@ -134,27 +122,23 @@ public class Lexer {
 
     // Move onto next char in line
     // Adjust for correct positioning
-    public void advance()
-    {
+    public void advance() {
         pos.advance(current);
         current = pos.getIndex() != input.length() ? input.charAt(pos.getIndex()) : NUL;
     }
 
-    private Token consumeComparisonOperator()
-    {
+    private Token consumeComparisonOperator() {
         StringBuilder buffer = new StringBuilder();
 
         // Makes sure we are adding a legit Comparison Operator
-        while (current != NUL && isComparisonOperator())
-        {
+        while (current != NUL && isComparisonOperator()) {
             buffer.append(current);
             advance();
         }
 
         String operator = buffer.toString();
 
-        if (TOKENS.containsKey(operator))
-        {
+        if (TOKENS.containsKey(operator)) {
             return new Token(TOKENS.get(operator));
         }
         // Error for unknown char
@@ -162,21 +146,29 @@ public class Lexer {
     }
 
     // Method called when a string is present in quotes
-    private Token consumeString()
-    {
+    private Token consumeString() {
         advance();
         StringBuilder buffer = new StringBuilder();
+        boolean escaped = false;
 
-        // makes sure string is in quote
-        while (current != NUL && !isOpeningString())
-        {
-            buffer.append(current);
+        // makes sure string is in quote or valid escape sequence
+        while (current != NUL && (!isOpeningString()) || escaped) {
+            if (escaped) {
+                if (!(ESCAPED_CHARS.containsKey(current))) {
+                    throw new InvalidCharError("Unknown Escape Sequence - " + current);
+                }
+                buffer.append(ESCAPED_CHARS.get(current));
+                escaped = false;
+            } else if (escaped()) {
+                escaped = true;
+            } else {
+                buffer.append(current);
+            }
             advance();
         }
 
         // Unclosed string
-        if (current == NUL)
-        {
+        if (current == NUL) {
             throw new InvalidCharError("Invalid char @ line: " + pos.getLine() + "\tcolumn: " + pos.getColumn() + "\tindex: " + pos.getIndex());
         }
 
@@ -185,19 +177,14 @@ public class Lexer {
     }
 
     // Method to build a String of numbers
-    private String numString()
-    {
+    private String numString() {
         StringBuilder buffer = new StringBuilder();
         boolean decimal = false; // tracks to make sure we only have one
 
-        while (current != NUL && (isNumber() || isPeriod()))
-        {
-            if (isPeriod() && decimal)
-            {
+        while (current != NUL && (isNumber() || isPeriod())) {
+            if (isPeriod() && decimal) {
                 throw new InvalidCharError("Invalid char @ line: " + pos.getLine() + "\tcolumn: " + pos.getColumn() + "\tindex: " + pos.getIndex());
-            }
-            else if (isPeriod())
-            {
+            } else if (isPeriod()) {
                 decimal = true;
             }
 
@@ -208,8 +195,7 @@ public class Lexer {
         String num = buffer.toString();
 
         // Invalid syntax - number ending with "."
-        if (num.endsWith("."))
-        {
+        if (num.endsWith(".")) {
             throw new InvalidCharError("Invalid char @ line: " + pos.getLine() + "\tcolumn: " + pos.getColumn() + "\tindex: " + pos.getIndex());
         }
 
@@ -217,15 +203,12 @@ public class Lexer {
     }
 
     // Adds number to list
-    private Token consumeNumber()
-    {
+    private Token consumeNumber() {
         return new Token(TokenType.NUMBER, numString());
     }
 
-    private Token consumeWord()
-    {
-        if(current == ',')
-        {
+    private Token consumeWord() {
+        if (current == ',') {
             advance();
             return new Token(TokenType.COMMA);
         }
@@ -234,26 +217,20 @@ public class Lexer {
         boolean suffix = false;
 
         // Builds a string with suffix or without
-        while (current != NUL && (isLetter() || isSuffix() || isColon()))
-        {
-            if (isSuffix())
-            {
-                if (suffix || start)
-                {
+        while (current != NUL && (isLetter() || isSuffix() || isColon())) {
+            if (isSuffix()) {
+                if (suffix || start) {
                     throw new InvalidCharError("Invalid char @ line: " + pos.getLine() + "\tcolumn: " + pos.getColumn() + "\tindex: " + pos.getIndex());
                 }
                 suffix = true;  // keeps track if suffix present
             }
             // if word followed by invalid suffix
-            else if (suffix)
-            {
+            else if (suffix) {
                 throw new InvalidCharError("Invalid char @ line: " + pos.getLine() + "\tcolumn: " + pos.getColumn() + "\tindex: " + pos.getIndex());
             }
             // prevents double :: input
-            else if (isColon())
-            {
-                if (buffer.length() == 0)
-                {
+            else if (isColon()) {
+                if (buffer.length() == 0) {
                     throw new InvalidCharError("Invalid char @ line: " + pos.getLine() + "\tcolumn: " + pos.getColumn() + "\tindex: " + pos.getIndex());
                 }
 
@@ -271,14 +248,12 @@ public class Lexer {
         String tok = buffer.toString();
 
         // Checks if keyword
-        if (TOKENS.containsKey(tok))
-        {
+        if (TOKENS.containsKey(tok)) {
             return new Token(TOKENS.get(tok));
         }
 
         // Bad Input
-        if (tok.isEmpty())
-        {
+        if (tok.isEmpty()) {
             throw new InvalidCharError("Invalid char @ line: " + pos.getLine() + "\tcolumn: " + pos.getColumn() + "\tindex: " + pos.getIndex());
         }
 
@@ -289,53 +264,47 @@ public class Lexer {
     private static final String WHITESPACE = " \t";
 
     // Helper Methods
-    private boolean isWhiteSpace()
-    {
+    private boolean isWhiteSpace() {
         return WHITESPACE.contains(Character.toString(current));
     }
 
-    private boolean isOperator()
-    {
+    private boolean isOperator() {
         return current == '+' || current == '-' || current == '*' || current == '/';
     }
 
-    private boolean isPeriod()
-    {
+    private boolean isPeriod() {
         return current == '.';
     }
 
-    private boolean isNumber()
-    {
+    private boolean isNumber() {
         return Character.isDigit(current);
     }
 
-    private boolean isOpeningString()
-    {
+    private boolean isOpeningString() {
         return current == '\"';
     }
 
-    private boolean isLetter()
-    {
+    private boolean isLetter() {
         return Character.isLetter(current);
     }
 
-    private boolean isParen()
-    {
+    private boolean isParen() {
         return current == '(' || current == ')';
     }
 
-    private boolean isComparisonOperator()
-    {
+    private boolean isComparisonOperator() {
         return current == '<' || current == '>' || current == '=';
     }
 
-    private boolean isSuffix()
-    {
+    private boolean isSuffix() {
         return current == '%' || current == '$';
     }
 
-    private boolean isColon()
-    {
+    private boolean isColon() {
         return current == ':';
+    }
+
+    private boolean escaped() {
+        return current == '\\';
     }
 }

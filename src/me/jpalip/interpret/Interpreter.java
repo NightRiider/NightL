@@ -17,6 +17,7 @@ import java.util.*;
 public class Interpreter {
     private List<Node> parse; // Full list of parsed Nodes
     private List<Node> datalist = new ArrayList<>(); // Holds DATA from program
+    private Stack<Node> stack = new Stack<>();
 
 
     // Hashmaps to store each variable
@@ -30,7 +31,7 @@ public class Interpreter {
     }
 
     public Primitive<?> visitLabels(LabeledStatementNode node) {
-        labels.put(node.getToken().toString(), node.getChild());
+        labels.put(node.getToken().getValue(), node.getChild());
         parse.set(parse.indexOf(node), node.getChild());
         return null;
     }
@@ -52,7 +53,6 @@ public class Interpreter {
                 else {
                     String data = datalist.get(0).getToken().getValue();
                     strVars.put(name, data);
-                    datalist.remove(0);
                 }
             }
             else if(n.getToken().getValue().contains("%")) {
@@ -63,7 +63,6 @@ public class Interpreter {
                     throw new InvalidSyntaxError("Invalid DATA Types!");
                 }
                 floatVars.put(name, num);
-                datalist.remove(0);
             }
             else {
                 String name = n.getToken().getValue();
@@ -73,8 +72,8 @@ public class Interpreter {
                 }
                 IntPrimitive num = new IntPrimitive(((IntegerNode)(datalist.get(0))).representation());
                 intVars.put(name, num);
-                datalist.remove(0);
             }
+            datalist.remove(0);
         }
         return null;
     }
@@ -181,6 +180,44 @@ public class Interpreter {
         return null;
     }
 
+    public BooleanPrimitive visitBooleanOp(BooleanOperationNode node) {
+        Primitive<?> left = evaluateMathOp(node.getNode());
+        Primitive<?> right = evaluateMathOp(node.getSecondNode());
+        TokenType operator = node.getOperator().getType();
+        switch (operator) {
+            case EQUALS:
+                return left.equal(right);
+            case LESS:
+                return left.less(right);
+            case GREATER:
+                return left.greater(right);
+            case NOT_EQUAL:
+                return left.notEqual(right);
+            case LESS_EQUAL:
+                return left.lessEqual(right);
+            case GREATER_EQUAL:
+                return left.greaterEqual(right);
+        }
+        return null;
+    }
+
+    public Primitive<?> visitIf(IfNode node) {
+        BooleanPrimitive exp = visitBooleanOp(node.getBoolOP());
+        if(exp.isTrue()) {
+            System.out.println("true bitch");
+            if(labels.get(node.getLabel().getValue()) != null) {
+                labels.get(node.getLabel().getValue()).visit(this);
+            }
+            else {
+                throw new InvalidSyntaxError("LabeledStatementNode not defined!");
+            }
+            //visitLabels((LabeledStatementNode) labels.get(node.getLabel()));
+        }
+
+        //System.out.println(exp);
+        return null;
+    }
+
     public Primitive<?> evaluateMathOp(Node node) {
         if (node instanceof MathOpNode) {
             Primitive<?> left = evaluateMathOp(((MathOpNode) node).getLeft());
@@ -267,12 +304,6 @@ public class Interpreter {
 
     public void interpret() {
         visitNodes();
-
-        // DEBUG STATEMENTS
-        //System.out.println(labels);
-        //System.out.println(intVars);
-        //System.out.println("Strings: " + strVars);
-        //System.out.println("Floats: " + floatVars);
-        //System.out.println("DATA: " + datalist);
+        System.out.println(labels);
     }
 }

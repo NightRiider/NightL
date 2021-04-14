@@ -64,20 +64,20 @@ public class Parser {
 
         // Creates IF Node
         if(current.getType() == TokenType.IF) {
-            advance();
-            Node firstExp = expression();
-            if(isMatch(OPERATORS)) {
-                Token op = current; // boolean operator
                 advance();
-                Node secondExp = expression();
-                BooleanOperationNode boolOp = new BooleanOperationNode(firstExp, op, secondExp);
-                if(current.getType() == TokenType.THEN) {
+                Node firstExp = expression();
+                if (isMatch(OPERATORS)) {
+                    Token op = current; // boolean operator
                     advance();
-                    Token label = current;
-                    return new IfNode(boolOp, label);
+                    Node secondExp = expression();
+                    BooleanOperationNode boolOp = new BooleanOperationNode(firstExp, op, secondExp);
+                    if (current.getType() == TokenType.THEN) {
+                        advance();
+                        Token label = current;
+                        return new IfNode(boolOp, label);
+                    }
+                    return null;
                 }
-                return null;
-            }
         }
 
         // Creates pre defined function call

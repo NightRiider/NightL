@@ -12,9 +12,13 @@ public class IfNode extends StatementsNode{
         this.label = label;
     }
 
+    public BooleanOperationNode getBoolOP() { return (BooleanOperationNode) node; }
+
+    public Token getLabel() { return label; }
+
     @Override
     public Primitive<?> visit(Interpreter interpret) {
-        return null;
+        return interpret.visitIf(this);
     }
 
     @Override

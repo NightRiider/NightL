@@ -1,15 +1,17 @@
-PRINT "Float Multiplication w/ Variable Test: ", 4.4 * 9.5
-READ c$, s$, z%
-string$ = "hello"
-PRINT string$
-DATA "NY", "NY", 11222.2
-PRINT "ReadNode Test: ", c$, s$, z%
-name$ = "JP"
-age = 5
+IF(5 > 4) THEN do:
+FtoC: C = 5*(F-32)/9
+F=72
+PRINT "test"
+test% = 4.4
+PRINT "Float Multiplication w/ Variable Test: ", test% * 9.5
+READ c$, s$, z
+DATA "Albany", "NY", 11222
+PRINT "ReadNode Test: ", c$, s$, z
+age = 2
+name$ = "Bob"
 astro% = 15.5
-PRINT astro% * 5.5
-PRINT to%
-PRINT "Float Multiplication w/ Variable Test: ", to% * 9.5
+PRINT "Assign Nodes Test: ", "Int: ", age, " Float: ", astro%, "String: ", name$
+PRINT "Float Multiplication w/ Variable Test: ", astro% * 9.5
 PRINT "String Variable Test: ", "Your name is", name$
 PRINT "Int Variable Test: ", "Your age is:", age
 PRINT "RANDOM Func Test: ", RANDOM()
@@ -18,9 +20,14 @@ PRINT "NUM Func FLOAT Test: ", NUM$(5.553)
 PRINT "LEFT$ Func Test: ", LEFT$("test", 2)
 PRINT "RIGHT$ Func Test: ", "test ", RIGHT$("test", 2)
 PRINT "MID$ Func Test: ", MID$("Albany",2,3)
-PRINT VAL("6")
-PRINT (5*10/2)*99
-PRINT VAL%("6.8999")
+PRINT "VAL Int Func Test: ", VAL("6")
+PRINT "VAL Float Func Test: ", VAL%("6.8999")
+PRINT "Print Evaluate Math Exp Test: ", (5*10/2)*99
+PRINT "InputNodes Test:"
+INPUT "What is your name?", name$
+INPUT "What is your age?", age%
+PRINT "Your name is: ", name$
+PRINT "Your age is: ", age%
 PRINT RANDOM()
 a = RANDOM()
 PRINT a

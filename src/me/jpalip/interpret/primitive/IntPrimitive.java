@@ -49,4 +49,59 @@ public class IntPrimitive extends Primitive<Integer> {
 
         return new IntPrimitive(value * intValue.getValue());
     }
+
+    @Override
+    public BooleanPrimitive less(Primitive<?> other)
+    {
+        if (other.type != Type.INT)
+        {
+            throw new RuntimeError("Right hand of operation '<' must be a number");
+        }
+
+        IntPrimitive value = other.getValue(Type.INT);
+        return new BooleanPrimitive(this.value < value.getValue());
+    }
+
+    @Override
+    public BooleanPrimitive lessEqual(Primitive<?> other)
+    {
+        if (other.type != Type.INT)
+        {
+            throw new RuntimeError("Right hand of operation '<=' must be a number");
+        }
+
+        IntPrimitive value = other.getValue(Type.INT);
+        return new BooleanPrimitive(this.value <= value.getValue());
+    }
+
+    @Override
+    public BooleanPrimitive greater(Primitive<?> other)
+    {
+        if (other.type != Type.INT)
+        {
+            throw new RuntimeError("Right hand of operation '>' must be a number");
+        }
+
+        IntPrimitive value = other.getValue(Type.INT);
+        return new BooleanPrimitive(this.value > value.getValue());
+    }
+
+    @Override
+    public BooleanPrimitive greaterEqual(Primitive<?> other)
+    {
+        if (other.type != Type.INT)
+        {
+            throw new RuntimeError("Right hand of operation '>=' must be a number");
+        }
+
+        IntPrimitive value = other.getValue(Type.INT);
+        return new BooleanPrimitive(this.value >= value.getValue());
+    }
+
+    @Override
+    public BooleanPrimitive notEqual(Primitive<?> other)
+    {
+        return equal(other).not();
+    }
+
 }
