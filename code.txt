@@ -6,6 +6,9 @@ g = i * 3
 PRINT "G: ", g
 NEXT i
 PRINT "stop"
+FOR i = 0 TO 10
+PRINT "you suck :", i
+NEXT i
 F=72
 doIt: PRINT "We made it!"
 IF 6 > 5 THEN doIt:
@@ -47,5 +50,7 @@ PRINT 4.4 * 3.0
 PRINT (a * 3)
 PRINT (5*3), "test"
 PRINT (5.2 * 5.2)
-PRINT "What is your name?", name$
-PRINT "What is your age?", age%
+INPUT "What is your name?", name$
+INPUT "What is your age?", age%
+PRINT "Your name is: ", name$
+PRINT "Your age is: ", age%

@@ -118,7 +118,6 @@ public class Interpreter {
                 }
             }
         }
-
         return null;
     }
 
@@ -149,7 +148,6 @@ public class Interpreter {
             }
         }
         System.out.println();
-
         return null;
     }
 
@@ -175,15 +173,12 @@ public class Interpreter {
 
         while(i < end.representation()) {
             Node execute = fornode.getNext(); // execute -> For Loop's first statement
-            // fornode.getNext().visit(this); // visits For loop's first statement
             // Loops through For loop's statements until last statement's next is null
             while(((StatementsNode)execute).getNext() != null) {
                 execute.visit(this);
                 execute = ((StatementsNode) execute).getNext();
-                //execute.visit(this);
             }
             execute.visit(this);
-            //System.out.println(fornode.getNext().toString() + " next: " + ((StatementsNode)fornode.getNext()).getNext()); // debug statement
             i += step.getValue();
             intVars.put(var.getToken().getValue(), new IntPrimitive(i));
         }
@@ -310,13 +305,12 @@ public class Interpreter {
         int index = 0;
         // First Loop through Parsed List
         for (int i = 0; i < parse.size(); i++) {
-            // Deals with processing For Loops and whats inside of them
+            // Deals with processing For Loops statements
             if(parse.get(i) instanceof ForNode fNode) {
-                ForNode currentFor = fNode;
                 Node forStatement;
                 if(i + 1 < parse.size()) {
-                    currentFor.setNext(parse.get(i + 1));
-                    forStatement = currentFor.getNext();
+                    forStatement = parse.get(i + 1);
+                    fNode.setNext(forStatement);
                     int ref = parse.indexOf(forStatement);
                     while(((StatementsNode)(forStatement)).getNext() == null) {
                         if(!(parse.get(ref+1) instanceof NextNode) && parse.get(ref + 1) != null) {
@@ -333,11 +327,11 @@ public class Interpreter {
                     if(parse.get(j) instanceof NextNode nNode) {
                         nNode.setRef(fNode);
                         if(j + 1 < parse.size()) {
-                            currentFor.setAfter(parse.get(j+1));
+                            fNode.setAfter(parse.get(j+1));
                             index = j + 1;
                             break;
                         } else {
-                            currentFor.setAfter(null);
+                            fNode.setAfter(null);
                         }
                     }
                 }
