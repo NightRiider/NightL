@@ -1,6 +1,6 @@
 package me.jpalip.lexerparser.nodes;
 
-import me.jpalip.interpret.Interpreter;
+import me.jpalip.interpret.*;
 import me.jpalip.interpret.primitive.Primitive;
 import me.jpalip.lexerparser.Token;
 
@@ -35,5 +35,4 @@ public abstract class Node {
     public abstract Primitive<?> visit(Interpreter interpret);
 
     public abstract String toString();
-
 }

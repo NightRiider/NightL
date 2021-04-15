@@ -1,6 +1,6 @@
 package me.jpalip.lexerparser.nodes;
 
-import me.jpalip.interpret.Interpreter;
+import me.jpalip.interpret.*;
 import me.jpalip.interpret.primitive.Primitive;
 
 import java.util.List;

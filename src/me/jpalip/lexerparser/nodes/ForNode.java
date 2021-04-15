@@ -17,6 +17,12 @@ public class ForNode extends StatementsNode
         this.increment = increment;
     }
 
+    public VariableNode getVariable() { return (VariableNode) node; }
+
+    public Node getStart() { return start; }
+
+    public IntegerNode getEnd() { return end; }
+
     public void setAfter(Node n) { afterNEXT = n; }
 
     public Node getAfter() { return afterNEXT; }

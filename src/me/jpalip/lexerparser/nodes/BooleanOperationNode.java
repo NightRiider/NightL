@@ -6,22 +6,21 @@ import me.jpalip.lexerparser.Token;
 
 public class BooleanOperationNode extends Node{
 
-    private Token operator;
     private Node secondNode;
     public BooleanOperationNode(Node node, Token operator, Node secondNode) {
-        super(null, node);
-        this.operator = operator;
+        super(operator, node);
         this.secondNode = secondNode;
     }
 
-    public Token getOperator() {
+    /*public Token getOperator() {
         return operator;
-    }
+    }*/
 
     public Node getNode() { return node; }
 
     public Node getSecondNode() { return secondNode; }
 
+    public Token getToken() { return token; }
 
     @Override
     public Primitive<?> visit(Interpreter interpret) {
@@ -30,6 +29,6 @@ public class BooleanOperationNode extends Node{
 
     @Override
     public String toString() {
-        return "BooleanOpNode(" + node.toString() + " " + operator.toString() + " " + secondNode.toString() + ")";
+        return "BooleanOpNode(" + node.toString() + " " + token.toString() + " " + secondNode.toString() + ")";
     }
 }

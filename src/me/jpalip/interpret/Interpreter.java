@@ -21,10 +21,10 @@ public class Interpreter {
 
 
     // Hashmaps to store each variable
-    private Map<String, IntPrimitive> intVars = new HashMap<>();
-    private Map<String, FloatPrimitive> floatVars = new HashMap<>();
-    private Map<String, String> strVars = new HashMap<>();
-    private Map<String, Node> labels = new HashMap<>();
+    private final Map<String, IntPrimitive> intVars = new HashMap<>();
+    private final Map<String, FloatPrimitive> floatVars = new HashMap<>();
+    private final Map<String, String> strVars = new HashMap<>();
+    private final Map<String, Node> labels = new HashMap<>();
 
     public Interpreter(StatementsNode parsed) {
         this.parse = parsed.representation();
@@ -110,12 +110,10 @@ public class Interpreter {
                 if(n.getToken().getValue().contains("$")) {
                     String string = scan.nextLine();
                     strVars.put(n.getToken().getValue(), string);
-                }
-                else if(n.getToken().getValue().contains("%")) {
-                    Float numb = scan.nextFloat();
-                    floatVars.put(n.getToken().getValue(), new FloatPrimitive(numb));
-                }
-                else {
+                } else if (n.getToken().getValue().contains("%")) {
+                    FloatPrimitive numb = new FloatPrimitive(scan.nextFloat());
+                    floatVars.put(n.getToken().getValue(), numb);
+                } else {
                     int num = scan.nextInt();
                     intVars.put(n.getToken().getValue(), new IntPrimitive(num));
                 }
@@ -164,64 +162,74 @@ public class Interpreter {
 
 
     public Primitive<?> visitFOR(ForNode fornode) {
-        for (int j = 0; j < parse.size(); j++) {
-            Node curr = parse.get(j);
-            if (curr instanceof NextNode) {
-                NextNode nNode = (NextNode) curr;
-                nNode.setRef(fornode);
-                if (j + 1 < parse.size()) {
-                    curr = parse.get(j + 1);
-                    fornode.setAfter(curr);
-                } else {
-                    fornode.setAfter(null);
-                }
+        IntPrimitive step = fornode.getStep() == null ? new IntPrimitive(1) : (IntPrimitive) evaluateMathOp(fornode.getStep());
+        IntPrimitive begin = null;
+        IntegerNode end = fornode.getEnd();
+        Node var = fornode.getVariable();
+        Node start = fornode.getStart();
+        // If variable is not defined, add it to int variables
+        if(!intVars.containsKey(var.getToken().getValue())) {
+            if(!(start instanceof VariableNode)) {
+                begin = new IntPrimitive(((IntegerNode) (start)).representation());
+                intVars.put(var.getToken().getValue(), begin);
             }
         }
-        return null;
-    }
-
-    public BooleanPrimitive visitBooleanOp(BooleanOperationNode node) {
-        Primitive<?> left = evaluateMathOp(node.getNode());
-        Primitive<?> right = evaluateMathOp(node.getSecondNode());
-        TokenType operator = node.getOperator().getType();
-        switch (operator) {
-            case EQUALS:
-                return left.equal(right);
-            case LESS:
-                return left.less(right);
-            case GREATER:
-                return left.greater(right);
-            case NOT_EQUAL:
-                return left.notEqual(right);
-            case LESS_EQUAL:
-                return left.lessEqual(right);
-            case GREATER_EQUAL:
-                return left.greaterEqual(right);
+        // Variable IS defined, set begin to its value from hashmap
+        else {
+            begin = intVars.get(start.getToken().getValue());
         }
+
+        int i = begin.getValue();
+
+        while(i < end.representation()) {
+            Node execute = fornode.getNext(); // execute -> For Loop's first statement
+            // fornode.getNext().visit(this); // visits For loop's first statement
+            // Loops through For loop's statements until last statement's next is null
+            while(((StatementsNode)execute).getNext() != null) {
+                execute.visit(this);
+                execute = ((StatementsNode) execute).getNext();
+                //execute.visit(this);
+            }
+            execute.visit(this);
+            //System.out.println(fornode.getNext().toString() + " next: " + ((StatementsNode)fornode.getNext()).getNext()); // debug statement
+            i += step.getValue();
+            intVars.put(var.getToken().getValue(), new IntPrimitive(i));
+        }
+        intVars.remove(var.getToken().getValue());
         return null;
     }
 
     public Primitive<?> visitIf(IfNode node) {
-        BooleanPrimitive exp = visitBooleanOp(node.getBoolOP());
+        BooleanPrimitive exp = (BooleanPrimitive) evaluateMathOp(node.getBoolOP());
         if(exp.isTrue()) {
-            System.out.println("true bitch");
             if(labels.get(node.getLabel().getValue()) != null) {
-                labels.get(node.getLabel().getValue()).visit(this);
+                (labels.get(node.getLabel().getValue())).visit(this);
             }
             else {
                 throw new InvalidSyntaxError("LabeledStatementNode not defined!");
             }
-            //visitLabels((LabeledStatementNode) labels.get(node.getLabel()));
         }
+        return null;
+    }
 
-        //System.out.println(exp);
+    public Primitive<?> visitNext(NextNode node) {
+
+
         return null;
     }
 
     public Primitive<?> evaluateMathOp(Node node) {
-        if (node instanceof MathOpNode) {
-            Primitive<?> left = evaluateMathOp(((MathOpNode) node).getLeft());
-            Primitive<?> right = evaluateMathOp(((MathOpNode) node).getRight());
+        if (node instanceof MathOpNode || node instanceof BooleanOperationNode) {
+                Primitive<?> left = null;
+                Primitive<?> right = null;
+            if(node instanceof MathOpNode n) {
+                left = evaluateMathOp(n.getLeft());
+                right = evaluateMathOp(n.getRight());
+            }
+            else if(node instanceof BooleanOperationNode n) {
+                left = evaluateMathOp(n.getNode());
+                right = evaluateMathOp(n.getSecondNode());
+            }
             TokenType op = node.getToken().getType();
             switch (op) {
                 case PLUS:
@@ -232,11 +240,23 @@ public class Interpreter {
                     return left.mul(right);
                 case DIVIDE:
                     return left.div(right);
+                case EQUALS:
+                    return left.equal(right);
+                case LESS:
+                    return left.less(right);
+                case GREATER:
+                    return left.greater(right);
+                case NOT_EQUAL:
+                    return left.notEqual(right);
+                case LESS_EQUAL:
+                    return left.lessEqual(right);
+                case GREATER_EQUAL:
+                    return left.greaterEqual(right);
             }
-        } else if (node instanceof IntegerNode) {
-            return new IntPrimitive(((IntegerNode) node).representation());
-        } else if (node instanceof FloatNode) {
-            return new FloatPrimitive(((FloatNode) node).representation());
+        } else if (node instanceof IntegerNode n) {
+            return new IntPrimitive(n.representation());
+        } else if (node instanceof FloatNode n) {
+            return new FloatPrimitive(n.representation());
         } else if (node instanceof VariableNode) {
             String key = node.getToken().getValue();
             if (intVars.containsKey(key)) {
@@ -246,8 +266,8 @@ public class Interpreter {
                 return floatVars.get(key);
             }
         }
-        else if(node instanceof FunctionNode) {
-            return visitFunction((FunctionNode) node);
+        else if(node instanceof FunctionNode n) {
+            return visitFunction(n);
         }
         else if(node instanceof StringNode) {
             return new StringPrimitive(node.getToken().getValue());
@@ -289,12 +309,49 @@ public class Interpreter {
     }
 
     public void visitNodes() {
-        // Process DATA first
+        // Process DATA statements first
         for(int i = 0; i < parse.size(); i++) {
-            if(parse.get(i) instanceof DataNode)
-                visitData((DataNode) parse.get(i));
+            if(parse.get(i) instanceof DataNode data)
+                visitData(data);
         }
+
+        int index = 0;
+        // First Loop through Parsed List
         for (int i = 0; i < parse.size(); i++) {
+            // Deals with processing For Loops and whats inside of them
+            if(parse.get(i) instanceof ForNode fNode) {
+                ForNode currentFor = fNode;
+                Node forStatement;
+                if(i + 1 < parse.size()) {
+                    currentFor.setNext(parse.get(i + 1));
+                    forStatement = currentFor.getNext();
+                    int ref = parse.indexOf(forStatement);
+                    while(((StatementsNode)(forStatement)).getNext() == null) {
+                        if(!(parse.get(ref+1) instanceof NextNode) && parse.get(ref + 1) != null) {
+                            ((StatementsNode)(forStatement)).setNext(parse.get(ref+1));
+                            forStatement = ((StatementsNode)(forStatement)).getNext();
+                            ref = parse.indexOf(forStatement);
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                }
+                for(int j = index; j < parse.size(); j++) {
+                    if(parse.get(j) instanceof NextNode nNode) {
+                        nNode.setRef(fNode);
+                        if(j + 1 < parse.size()) {
+                            currentFor.setAfter(parse.get(j+1));
+                            index = j + 1;
+                            break;
+                        } else {
+                            currentFor.setAfter(null);
+                        }
+                    }
+                }
+                visitFOR(fNode);
+                i = index;
+            }
             parse.get(i).visit(this);
             if (i + 1 < parse.size()) {
                 ((StatementsNode) parse.get(i)).setNext(parse.get(i + 1));
@@ -304,6 +361,5 @@ public class Interpreter {
 
     public void interpret() {
         visitNodes();
-        System.out.println(labels);
     }
 }

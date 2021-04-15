@@ -9,7 +9,6 @@ package me.jpalip.lexerparser;
 import me.jpalip.lexerparser.nodes.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Parser {
@@ -37,8 +36,7 @@ public class Parser {
         }
 
         // statements() -> statement() -> assignment() || (print() || data || input) -> returns StatementsNode || return expression()
-        Node node = statements();
-        return node;
+        return statements();
     }
 
     // Accepts  statements, calls Statement() then if no statement exists, call expression()
@@ -83,7 +81,6 @@ public class Parser {
         // Creates pre defined function call
         if(isMatch(FUNCTIONS)) {
             FunctionNode function = (FunctionNode) functionInvocation(); // we know current is now a function so call its Invocation method & return it
-            //System.out.println("FUNCTION : " + function);
             return function;
         }
 
@@ -342,8 +339,9 @@ public class Parser {
     }
 
     // Helper Methods - Self Explanatory
-    private boolean isMatch(TokenType[] types) {
-        return Arrays.stream(types).anyMatch(current.getType()::equals);
+    private boolean isMatch(TokenType[] types)
+    {
+        return List.of(types).contains(current.getType());
     }
 
     private boolean isDecimal(String num) {

@@ -54,7 +54,6 @@ public class Basic {
 
                 Interpreter interpret = new Interpreter(parse);
                 interpret.interpret();
-                //System.out.println(interpret.interpret());
             }
         }
         // Fail with no arguments
