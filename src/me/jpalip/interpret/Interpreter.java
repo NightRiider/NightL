@@ -15,9 +15,10 @@ import me.jpalip.lexerparser.nodes.*;
 import java.util.*;
 
 public class Interpreter {
-    private List<Node> parse; // Full list of parsed Nodes
-    private List<Node> datalist = new ArrayList<>(); // Holds DATA from program
-    private Stack<Node> stack = new Stack<>();
+
+    private final List<Node> parse; // Full list of parsed Nodes
+    private final List<Node> datalist = new ArrayList<>(); // Holds DATA from program
+    private final Stack<Node> stack = new Stack<>();
 
 
     // Hashmaps to store each variable
@@ -43,34 +44,31 @@ public class Interpreter {
     }
 
     public Primitive<?> visitRead(ReadNode node) {
-        for(Node n : node.representation()) {
-            if(n.getToken().getValue().contains("$")) {
+        for (Node n : node.representation()) {
+            if (n.getToken().getValue().contains("$")) {
                 String name = n.getToken().getValue();
                 // If types don't match - Strings
-                if(datalist.get(0).getToken().getType() != TokenType.STRING) {
+                if (datalist.get(0).getToken().getType() != TokenType.STRING) {
                     throw new InvalidSyntaxError("Invalid DATA Types!");
-                }
-                else {
+                } else {
                     String data = datalist.get(0).getToken().getValue();
                     strVars.put(name, data);
                 }
-            }
-            else if(n.getToken().getValue().contains("%")) {
+            } else if (n.getToken().getValue().contains("%")) {
                 String name = n.getToken().getValue();
-                FloatPrimitive num = new FloatPrimitive(((FloatNode)(datalist.get(0))).representation());
+                FloatPrimitive num = new FloatPrimitive(((FloatNode) (datalist.get(0))).representation());
                 // If types don't match - Floats
-                if(num.getType() != Type.FLOAT) {
+                if (num.getType() != Type.FLOAT) {
                     throw new InvalidSyntaxError("Invalid DATA Types!");
                 }
                 floatVars.put(name, num);
-            }
-            else {
+            } else {
                 String name = n.getToken().getValue();
                 // If types don't match - Ints
-                if(!(datalist.get(0) instanceof IntegerNode)) {
+                if (!(datalist.get(0) instanceof IntegerNode)) {
                     throw new InvalidSyntaxError("Invalid DATA Types!");
                 }
-                IntPrimitive num = new IntPrimitive(((IntegerNode)(datalist.get(0))).representation());
+                IntPrimitive num = new IntPrimitive(((IntegerNode) (datalist.get(0))).representation());
                 intVars.put(name, num);
             }
             datalist.remove(0);
@@ -96,7 +94,8 @@ public class Interpreter {
                 StringPrimitive strVal = value.getValue(Type.STRING);
                 strVars.put(node.getToken().getValue(), strVal.getValue());
             }
-            default: return null;
+            default:
+                return null;
         }
 
         return null;
@@ -104,10 +103,10 @@ public class Interpreter {
 
     public Primitive<?> visitInput(InputNode node) {
         Scanner scan = new Scanner(System.in);
-        System.out.println(((StringNode)(node.representation().get(0))).representation());
-        for(Node n : node.representation()) {
-            if(n != node.representation().get(0)) {
-                if(n.getToken().getValue().contains("$")) {
+        System.out.println(((StringNode) (node.representation().get(0))).representation());
+        for (Node n : node.representation()) {
+            if (n != node.representation().get(0)) {
+                if (n.getToken().getValue().contains("$")) {
                     String string = scan.nextLine();
                     strVars.put(n.getToken().getValue(), string);
                 } else if (n.getToken().getValue().contains("%")) {
@@ -128,18 +127,14 @@ public class Interpreter {
             if (n instanceof VariableNode) {
                 if (intVars.get(n.getToken().getValue()) != null) {
                     System.out.print(intVars.get(n.getToken().getValue()) + " ");
-                }
-                else if (floatVars.get(n.getToken().getValue()) != null) {
+                } else if (floatVars.get(n.getToken().getValue()) != null) {
                     System.out.print(floatVars.get(n.getToken().getValue()) + " ");
-                }
-                else if (strVars.get(n.getToken().getValue()) != null) {
+                } else if (strVars.get(n.getToken().getValue()) != null) {
                     System.out.print(strVars.get(n.getToken().getValue()) + " ");
-                }
-                else {
+                } else {
                     throw new InvalidSyntaxError("Variable: \"" + n.getToken().getValue() + "\" does not exist!");
                 }
-            }
-            else if (n instanceof IntegerNode)
+            } else if (n instanceof IntegerNode)
                 System.out.print(((IntegerNode) n).representation() + " ");
             else if (n instanceof FloatNode)
                 System.out.print(((FloatNode) n).representation() + " ");
@@ -147,11 +142,9 @@ public class Interpreter {
                 System.out.print(((StringNode) n).representation() + " ");
             else if (n instanceof MathOpNode) {
                 System.out.print(evaluateMathOp(n) + " ");
-            }
-            else if (n instanceof FunctionNode) {
+            } else if (n instanceof FunctionNode) {
                 System.out.print(n.visit(this));
-            }
-            else if(n instanceof InputNode) {
+            } else if (n instanceof InputNode) {
                 System.out.println(n.visit(this));
             }
         }
@@ -159,7 +152,6 @@ public class Interpreter {
 
         return null;
     }
-
 
     public Primitive<?> visitFOR(ForNode fornode) {
         IntPrimitive step = fornode.getStep() == null ? new IntPrimitive(1) : (IntPrimitive) evaluateMathOp(fornode.getStep());

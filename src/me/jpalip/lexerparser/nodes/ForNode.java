@@ -27,6 +27,10 @@ public class ForNode extends StatementsNode
 
     public Node getAfter() { return afterNEXT; }
 
+    public IntegerNode getStep()
+    {
+        return increment;
+    }
 
     @Override
     public Primitive<?> visit(Interpreter interpret) {
