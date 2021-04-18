@@ -34,12 +34,19 @@ public class Interpreter {
     public Primitive<?> visitLabels(LabeledStatementNode node) {
         labels.put(node.getToken().getValue(), node.getChild());
         parse.set(parse.indexOf(node), node.getChild());
+        node.getChild().visit(this);
         return null;
     }
 
     public Primitive<?> visitData(DataNode node) {
         datalist.addAll(node.representation());
         parse.remove(node);
+        return null;
+    }
+
+    public Primitive<?> visitGoSub(GosubNode node) {
+
+
         return null;
     }
 
@@ -180,20 +187,28 @@ public class Interpreter {
             }
             execute.visit(this);
             i += step.getValue();
-            intVars.put(var.getToken().getValue(), new IntPrimitive(i));
+            intVars.put(var.getToken().getValue(), new IntPrimitive(i)); // updates i value in hashmap
         }
-        intVars.remove(var.getToken().getValue());
+        intVars.remove(var.getToken().getValue()); // for loops over so delete variable i
         return null;
     }
 
     public Primitive<?> visitIf(IfNode node) {
         BooleanPrimitive exp = (BooleanPrimitive) evaluateMathOp(node.getBoolOP());
-        if(exp.isTrue()) {
-            if(labels.get(node.getLabel().getValue()) != null) {
+
+        // If expression is true
+        if (exp.isTrue()) {
+            // If statement checks if hashmap.get from the name of the node isn't null
+            if (labels.get(node.getLabel().getValue()) != null) {
                 (labels.get(node.getLabel().getValue())).visit(this);
             }
             else {
                 throw new InvalidSyntaxError("LabeledStatementNode not defined!");
+            }
+        }
+        else if (node.getElselabel() != null) {
+            if(labels.get(node.getElselabel().getValue()) != null) {
+                (labels.get(node.getElselabel().getValue())).visit(this);
             }
         }
         return null;
@@ -303,7 +318,7 @@ public class Interpreter {
         }
 
         int index = 0;
-        // First Loop through Parsed List
+        // Loop through Parsed List
         for (int i = 0; i < parse.size(); i++) {
             // Deals with processing For Loops statements
             if(parse.get(i) instanceof ForNode fNode) {
@@ -339,8 +354,23 @@ public class Interpreter {
                 i = index;
             }
             parse.get(i).visit(this);
+            // Creates like a Linked List for all Statements
             if (i + 1 < parse.size()) {
                 ((StatementsNode) parse.get(i)).setNext(parse.get(i + 1));
+            }
+            if(parse.get(i) instanceof GosubNode gNode) {
+                stack.push(gNode.getNext());
+                String label = gNode.getLabel().getValue();
+                Node child = labels.get(label);
+                int execute = parse.indexOf(child);
+                i = execute - 1;
+            }
+            if(parse.get(i) instanceof ReturnNode) {
+                if( ! stack.isEmpty()) {
+                    Node execute = stack.pop();
+                    int executeReturn = parse.indexOf(execute);
+                    i = executeReturn;
+                }
             }
         }
     }

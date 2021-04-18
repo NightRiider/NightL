@@ -5,12 +5,10 @@ import me.jpalip.interpret.primitive.Primitive;
 
 public class ForNode extends StatementsNode
 {
-    private IntegerNode end, increment;
-    private Node start;
-
+    private IntegerNode end, increment, start;
     private Node afterNEXT;
 
-    public ForNode(VariableNode node, Node start, IntegerNode end, IntegerNode increment) {
+    public ForNode(VariableNode node, IntegerNode start, IntegerNode end, IntegerNode increment) {
         super(null, node);
         this.start = start;
         this.end = end;

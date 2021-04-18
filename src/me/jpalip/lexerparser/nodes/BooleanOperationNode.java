@@ -7,14 +7,11 @@ import me.jpalip.lexerparser.Token;
 public class BooleanOperationNode extends Node{
 
     private Node secondNode;
+
     public BooleanOperationNode(Node node, Token operator, Node secondNode) {
         super(operator, node);
         this.secondNode = secondNode;
     }
-
-    /*public Token getOperator() {
-        return operator;
-    }*/
 
     public Node getNode() { return node; }
 

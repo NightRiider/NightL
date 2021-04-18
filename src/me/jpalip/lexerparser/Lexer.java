@@ -40,6 +40,7 @@ public class Lexer {
         TOKENS.put("GOSUB", TokenType.GOSUB);
         TOKENS.put("FOR", TokenType.FOR);
         TOKENS.put("IF", TokenType.IF);
+        TOKENS.put("ELSE", TokenType.ELSE);
         TOKENS.put("THEN", TokenType.THEN);
         TOKENS.put("STEP", TokenType.STEP);
         TOKENS.put("TO", TokenType.TO);

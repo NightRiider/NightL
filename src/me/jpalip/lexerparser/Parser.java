@@ -72,7 +72,13 @@ public class Parser {
                     if (current.getType() == TokenType.THEN) {
                         advance();
                         Token label = current;
-                        return new IfNode(boolOp, label);
+                        advance();
+                        if (current.getType() == TokenType.ELSE) {
+                            advance();
+                            Token elabel = current;
+                            return new IfNode(boolOp, label, elabel);
+                        }
+                        return new IfNode(boolOp, label, null);
                     }
                     return null;
                 }
@@ -90,7 +96,7 @@ public class Parser {
             IntegerNode inc = new IntegerNode(new Token(TokenType.NUMBER, "1"));
             AssignmentNode assignment = (AssignmentNode) assignmentStatement();
             VariableNode var = (VariableNode) assignment.tokenToVariableNode();
-            Node start = assignment.expToIntNode();
+            IntegerNode start = (IntegerNode) assignment.expToIntNode();
             advance();
             IntegerNode limit = (IntegerNode) factor();
             if(current.getType() == TokenType.STEP) {
@@ -111,8 +117,8 @@ public class Parser {
         }
         if(current.getType() == TokenType.GOSUB) {
             advance();
-            VariableNode var = (VariableNode) factor();
-            return new GosubNode(var);
+            Token label = current;
+            return new GosubNode(label);
         }
 
         // Creates Labeled Statement Node to refer back too

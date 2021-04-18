@@ -36,6 +36,7 @@ public enum TokenType {
     STEP("STEP"),
     TO("TO"),
     IF("IF"),
+    ELSE("ELSE"),
     THEN("THEN"),
     GOSUB("GOSUB"),
     RETURN("RETURN"),

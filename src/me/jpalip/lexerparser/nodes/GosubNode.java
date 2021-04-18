@@ -2,12 +2,15 @@ package me.jpalip.lexerparser.nodes;
 
 import me.jpalip.interpret.Interpreter;
 import me.jpalip.interpret.primitive.Primitive;
+import me.jpalip.lexerparser.Token;
 
 public class GosubNode extends StatementsNode{
 
-    public GosubNode(VariableNode node) {
-        super(null, node);
+    public GosubNode(Token label) {
+        super(label, null);
     }
+
+    public Token getLabel() { return token; }
 
     @Override
     public Primitive<?> visit(Interpreter interpret) {
@@ -16,6 +19,6 @@ public class GosubNode extends StatementsNode{
 
     @Override
     public String toString() {
-        return "GosubNode(" + node.toString() + ")";
+        return "GosubNode(" + token.toString() + ")";
     }
 }
