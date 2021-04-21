@@ -1,9 +1,9 @@
 /**
  * @version 2.0 - Interpreter #2
- * @JP Aliprantis
- * @date 4/5/2021
+ * JP Aliprantis
+ * Date - 4/5/2021
  * ICSI 311 - Michael Phipps
- */
+ **/
 
 package me.jpalip.interpret;
 
@@ -34,7 +34,6 @@ public class Interpreter {
     public Primitive<?> visitLabels(LabeledStatementNode node) {
         labels.put(node.getToken().getValue(), node.getChild());
         parse.set(parse.indexOf(node), node.getChild());
-        node.getChild().visit(this);
         return null;
     }
 
@@ -268,6 +267,14 @@ public class Interpreter {
                 return floatVars.get(key);
             }
         }
+        else if(node instanceof UnaryOpNode n) {
+            if(n.getNode() instanceof IntegerNode intN) {
+                return new IntPrimitive(-intN.representation());
+            }
+            else if(n.getNode() instanceof FloatNode fN) {
+                return new FloatPrimitive(-fN.representation());
+            }
+        }
         else if(node instanceof FunctionNode n) {
             return visitFunction(n);
         }
@@ -316,8 +323,14 @@ public class Interpreter {
             if(parse.get(i) instanceof DataNode data)
                 visitData(data);
         }
+        for(int i = 0; i < parse.size(); i++) {
+            if(parse.get(i) instanceof LabeledStatementNode lsn)
+                visitLabels(lsn);
+        }
 
-        int index = 0;
+        System.out.println(parse);
+
+        int index = 0; // Used to go back and forth between statements from FOR and GOSUB nodes
         // Loop through Parsed List
         for (int i = 0; i < parse.size(); i++) {
             // Deals with processing For Loops statements
@@ -369,7 +382,7 @@ public class Interpreter {
                 if( ! stack.isEmpty()) {
                     Node execute = stack.pop();
                     int executeReturn = parse.indexOf(execute);
-                    i = executeReturn;
+                    i = executeReturn - 1;
                 }
             }
         }

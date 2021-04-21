@@ -25,6 +25,10 @@ public class UnaryOpNode extends Node {
         this.node = node;
     }
 
+    public Node getNode() {
+        return node;
+    }
+
     public TokenType representation()
     {
         return token.getType();
